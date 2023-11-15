@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,7 +35,6 @@ public class TaskController {
 
   @PostMapping("")
   public Task createTask(@RequestBody Task task) {
-    System.out.println(task.getId());
     return repository.save(task);
   }
 
@@ -61,8 +61,16 @@ public class TaskController {
     }
   }
 
-
-
-
+  @PatchMapping("/{id}")
+  public void updateIsDone(@PathVariable Long id, @RequestBody boolean isDone) {
+    Optional <Task> taskToUpdate = repository.findById(id);
+    if (taskToUpdate.isPresent()) {
+      Task taskUpdated = taskToUpdate.get();
+      taskUpdated.setDone(isDone);
+      repository.save(taskUpdated);
+    } else {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task Not Found");
+    }
+  }
 
 }
